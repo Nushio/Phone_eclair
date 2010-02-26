@@ -219,6 +219,7 @@ private static PendingIntent mVibrateIntent;
 private static Vibrator mVibrator = null;
 private static AlarmManager mAM;
 
+
 public void startVib45(long callDurationMsec) {
     if (VDBG) Log.i(LOG_TAG, "vibrate start @" + callDurationMsec);
     stopVib45();

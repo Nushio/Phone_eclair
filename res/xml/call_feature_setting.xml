@@ -110,6 +110,13 @@
         android:title="@string/set_force_touch"
         android:persistent="false"
         android:summary="@string/set_force_touch_sum"/>
+<!-- added by nushio@fedoraproject.org -->
+    <CheckBoxPreference
+        android:key="button_shake_to_answer"
+        android:title="@string/shake_to_answer"
+        android:persistent="false"
+        android:summary="@string/shake_to_answer_sum"/>
+<!-- end nushio@fedoraproject.org -->
     <PreferenceScreen
         android:key="button_black_list"
         android:title="@string/black_list"

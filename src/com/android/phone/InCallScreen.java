@@ -193,6 +193,10 @@ public class InCallScreen extends Activity
     public static final String OTA_NUMBER = "*228";
     public static final String EXTRA_OTA_CALL = "android.phone.extra.OTA_CALL";
 
+    // Constant for Shake To Answer
+    public static final String SHAKE_TO_ANSWER =
+           "com.android.phone.InCallScreen.SHAKE_TO_ANSWER";
+
     // When InCallScreenMode is UNDEFINED set the default action
     // to ACTION_UNDEFINED so if we are resumed the activity will
     // know its undefined. In particular checkIsOtaCall will return
@@ -1180,6 +1184,19 @@ mForceTouch = mSettings.mForceTouch;
         // an aborted "Add Call" request), so we should let the mute state
         // be handled by the PhoneUtils phone state change handler.
         final PhoneApp app = PhoneApp.getInstance();
+
+
+	mSettings = CallFeaturesSetting.getInstance(android.preference.PreferenceManager.getDefaultSharedPreferences(this));
+	if(mSettings.mShakeAnswer){
+		// Adding Shake to "shake to answer" --Nushio
+		ShakeListener mShaker = new ShakeListener(this);
+		mShaker.setOnShakeListener(new ShakeListener.OnShakeListener () {
+				public void onShake()
+				{
+					internalAnswerCall();
+				}
+		});
+	}
         // If OTA Activation is configured for Power up scenario, then
         // InCallScreen UI started with Intent of ACTION_SHOW_ACTIVATION
         // to show OTA Activation screen at power up.

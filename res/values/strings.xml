@@ -1158,4 +1158,7 @@
 <string name="remove_black">Remove %s from List</string>
 <string name="set_force_touch">Force Touch Keyboard</string>
 <string name="set_force_touch_sum">Force show Touch UI without detect proximity sensor.</string>
+<!-- added by nushio@fedoraproject.org -->
+<string name="shake_to_answer">Shake-To-Answer</string>
+<string name="shake_to_answer_sum">Shake the Phone to Answer the incoming phone call.</string>
 </resources>
