@@ -116,6 +116,11 @@
         android:title="@string/shake_to_answer"
         android:persistent="false"
         android:summary="@string/shake_to_answer_sum"/>
+    <CheckBoxPreference
+        android:key="button_shake_to_mute"
+        android:title="@string/shake_to_mute"
+        android:persistent="false"
+        android:summary="@string/shake_to_mute_sum"/>
 <!-- end nushio@fedoraproject.org -->
     <PreferenceScreen
         android:key="button_black_list"

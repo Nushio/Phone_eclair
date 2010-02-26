@@ -403,6 +403,10 @@ static boolean mVibCallWaiting;
 private static final String BUTTON_SHAKE_TO_ANSWER       = "button_shake_to_answer";
 private CheckBoxPreference mButtonShakeToAnswer;
 static boolean mShakeAnswer;
+//Add settings for Shake-to-Mute, by Nushio
+private static final String BUTTON_SHAKE_TO_MUTE       = "button_shake_to_mute";
+private CheckBoxPreference mButtonShakeToMute;
+static boolean mShakeMute;
 
 
 private static final String BUTTON_ADD_BLACK = "button_add_black";
@@ -1375,7 +1379,9 @@ mButtonVibCallWaiting.setChecked(mVibCallWaiting);
 // add by nushio for shake-to-answer
 mButtonShakeToAnswer       = (CheckBoxPreference) prefSet.findPreference(BUTTON_SHAKE_TO_ANSWER);
 mButtonShakeToAnswer.setChecked(mShakeAnswer);
-
+//add by nushio for shake-to-mute
+mButtonShakeToMute       = (CheckBoxPreference) prefSet.findPreference(BUTTON_SHAKE_TO_MUTE);
+mButtonShakeToMute.setChecked(mShakeMute);
 
 mButtonForceTouch  = (CheckBoxPreference) prefSet.findPreference(BUTTON_FORCE_TOUCH);
 if (getResources().getBoolean(R.bool.allow_incoming_call_touch_ui)) {
@@ -1771,6 +1777,7 @@ private void init(SharedPreferences pref) {
     mVibCallWaiting = pref.getBoolean(BUTTON_VIBRATE_CALL_WAITING, false);
     mForceTouch  = pref.getBoolean(BUTTON_FORCE_TOUCH, false);
     mShakeAnswer       = pref.getBoolean(BUTTON_SHAKE_TO_ANSWER, false);
+    mShakeMute       = pref.getBoolean(BUTTON_SHAKE_TO_MUTE, false);
     ObjectInputStream ois = null;
     try {
         ois = new ObjectInputStream(PhoneApp.getInstance().openFileInput(BLFILE));
@@ -1859,6 +1866,7 @@ protected void onDestroy() {
     outState.putBoolean(BUTTON_SHOW_ORGAN, mButtonShowOrgan.isChecked());
     outState.putBoolean(BUTTON_VIBRATE_CALL_WAITING, mButtonVibCallWaiting.isChecked());
     outState.putBoolean(BUTTON_SHAKE_TO_ANSWER, mButtonShakeToAnswer.isChecked());
+    outState.putBoolean(BUTTON_SHAKE_TO_MUTE, mButtonShakeToMute.isChecked());
     outState.putBoolean(BUTTON_FORCE_TOUCH, mButtonForceTouch == null || mButtonForceTouch.isChecked());
     outState.commit();
     init(pref);
