@@ -792,7 +792,7 @@ CallFeaturesSetting getSettings() {
     /**
      * Re-enables the status bar after a previous disableStatusBar() call.
      *
-     * Any call to this method MUST correspond to (i.e. be balanced with)
+     * Any call to this method MUST correspond to (i.e. be balanced with) 
      * a previous disableStatusBar() call.
      */
     /* package */ void reenableStatusBar() {
