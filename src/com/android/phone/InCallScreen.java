@@ -193,10 +193,6 @@ public class InCallScreen extends Activity
     public static final String OTA_NUMBER = "*228";
     public static final String EXTRA_OTA_CALL = "android.phone.extra.OTA_CALL";
 
-    // Constant for Shake To Answer
-    public static final String SHAKE_TO_ANSWER =
-           "com.android.phone.InCallScreen.SHAKE_TO_ANSWER";
-
     // When InCallScreenMode is UNDEFINED set the default action
     // to ACTION_UNDEFINED so if we are resumed the activity will
     // know its undefined. In particular checkIsOtaCall will return
@@ -1194,6 +1190,7 @@ mForceTouch = mSettings.mForceTouch;
 				public void onShake()
 				{
 					internalAnswerCall();
+			                app.setRestoreMuteOnInCallResume(false);
 				}
 		});
 	}
