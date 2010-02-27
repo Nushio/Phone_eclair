@@ -11,12 +11,15 @@ package com.android.phone;
 
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.content.Context;
 import java.lang.UnsupportedOperationException;
 
 public class ShakeListener implements SensorListener 
 {
-	private static int FORCE_THRESHOLD = 500;
+	private static int FORCE_THRESHOLD_STRONG = 950;
+	private static int FORCE_THRESHOLD_MEDIUM = 700;
+	private static int FORCE_THRESHOLD_WEAK = 400;
 	private static final int TIME_THRESHOLD = 100;
 	private static final int SHAKE_TIMEOUT = 500;
 	private static final int SHAKE_DURATION = 1000;
@@ -33,24 +36,15 @@ public class ShakeListener implements SensorListener
 
 	public interface OnShakeListener
 	{
-		public void onShake();
+		public void onStrongShake();
+		public void onMediumShake();
+		public void onWeakShake();
 	}
 
-	public ShakeListener(Context context, int strength) 
+	public ShakeListener(Context context) 
 	{ 
 		mContext = context;
-		resume(); 
-		switch(strength){
-			case 0:
-				FORCE_THRESHOLD = 200;
-				break;
-			case 1:
-				FORCE_THRESHOLD = 260;
-				break;
-			case 2:
-				FORCE_THRESHOLD = 320;
-				break;
-		}
+		resume();
 	}
 
 	public void setOnShakeListener(OnShakeListener listener)
@@ -91,16 +85,36 @@ public class ShakeListener implements SensorListener
 		if ((now - mLastTime) > TIME_THRESHOLD) {
 			long diff = now - mLastTime;
 			float speed = Math.abs(values[SensorManager.DATA_X] + values[SensorManager.DATA_Y] + values[SensorManager.DATA_Z] - mLastX - mLastY - mLastZ) / diff * 10000;
-			if (speed > FORCE_THRESHOLD) {
+			Log.i("Testing","Speed: "+ speed);
+			if (speed > FORCE_THRESHOLD_STRONG) {
 				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
 					mLastShake = now;
 					mShakeCount = 0;
 					if (mShakeListener != null) { 
-						mShakeListener.onShake(); 
+						mShakeListener.onStrongShake(); 
+					}
+				}
+				mLastForce = now;
+			}else if (speed > FORCE_THRESHOLD_MEDIUM) {
+				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
+					mLastShake = now;
+					mShakeCount = 0;
+					if (mShakeListener != null) { 
+						mShakeListener.onMediumShake(); 
+					}
+				}
+				mLastForce = now;
+			}else if (speed > FORCE_THRESHOLD_WEAK) {
+				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
+					mLastShake = now;
+					mShakeCount = 0;
+					if (mShakeListener != null) { 
+						mShakeListener.onWeakShake(); 
 					}
 				}
 				mLastForce = now;
 			}
+			
 			mLastTime = now;
 			mLastX = values[SensorManager.DATA_X];
 			mLastY = values[SensorManager.DATA_Y];
