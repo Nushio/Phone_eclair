@@ -68,6 +68,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SHUTDOWN" />
+<!-- Permission to send SMS-->    
+<uses-permission android:name="android.permission.SEND_SMS" />
 
     <application android:name="PhoneApp"
                  android:persistent="true"

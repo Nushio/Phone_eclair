@@ -18,8 +18,8 @@ import java.lang.UnsupportedOperationException;
 public class ShakeListener implements SensorListener 
 {
 	private static int FORCE_THRESHOLD_STRONG = 950;
-	private static int FORCE_THRESHOLD_MEDIUM = 700;
-	private static int FORCE_THRESHOLD_WEAK = 400;
+	private static int FORCE_THRESHOLD_MEDIUM = 500;
+	private static int FORCE_THRESHOLD_WEAK = 350;
 	private static final int TIME_THRESHOLD = 100;
 	private static final int SHAKE_TIMEOUT = 500;
 	private static final int SHAKE_DURATION = 1000;
@@ -88,32 +88,32 @@ public class ShakeListener implements SensorListener
 			Log.i("Testing","Speed: "+ speed);
 			if (speed > FORCE_THRESHOLD_STRONG) {
 				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
-					mLastShake = now;
-					mShakeCount = 0;
 					if (mShakeListener != null) { 
+						Log.i("Testing","Strong Shake, haha!: "+ speed);
 						mShakeListener.onStrongShake(); 
 					}
 				}
-				mLastForce = now;
-			}else if (speed > FORCE_THRESHOLD_MEDIUM) {
+			}
+			if (speed > FORCE_THRESHOLD_MEDIUM) {
 				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
-					mLastShake = now;
-					mShakeCount = 0;
 					if (mShakeListener != null) { 
+						Log.i("Testing","Medium Shake, haha!: "+ speed);
 						mShakeListener.onMediumShake(); 
 					}
 				}
-				mLastForce = now;
-			}else if (speed > FORCE_THRESHOLD_WEAK) {
+			}
+			if (speed > FORCE_THRESHOLD_WEAK) {
 				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
-					mLastShake = now;
-					mShakeCount = 0;
 					if (mShakeListener != null) { 
+						Log.i("Testing","Weak Shake, haha!: "+ speed);
 						mShakeListener.onWeakShake(); 
 					}
 				}
-				mLastForce = now;
 			}
+			mLastShake = now;
+			mShakeCount = 0;
+			mLastForce = now;
+			
 			
 			mLastTime = now;
 			mLastX = values[SensorManager.DATA_X];

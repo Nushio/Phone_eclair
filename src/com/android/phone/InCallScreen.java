@@ -43,6 +43,7 @@ import android.provider.Checkin;
 import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.ServiceState;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.text.method.DialerKeyListener;
 import android.util.Log;
@@ -550,7 +551,7 @@ implements View.OnClickListener, View.OnTouchListener {
 
 	private CallFeaturesSetting mSettings;
 	private boolean mForceTouch;
-	
+
 	// Added by Nushio for Shake-to-Stuff usage. 
 	private boolean mShakeAnswer;
 	private boolean mShakeMute;
@@ -563,7 +564,7 @@ implements View.OnClickListener, View.OnTouchListener {
 		Profiler.callScreenOnCreate();
 		mShaker = new ShakeListener(this);
 		mShaker.pause(); // We don't need to turn this on yet. 
-		
+
 		super.onCreate(icicle);
 
 		final PhoneApp app = PhoneApp.getInstance();
@@ -634,7 +635,7 @@ implements View.OnClickListener, View.OnTouchListener {
 		mForceTouch = mSettings.mForceTouch;
 		mShakeAnswer = mSettings.mShakeAnswer; // Reload settings, just in case. 
 		mShakeMute = mSettings.mShakeMute;
-		
+
 		// The "touch lock overlay" feature is used only on devices that
 		// *don't* use a proximity sensor to turn the screen off while in-call.
 		// add by cytown: also turn off if force show the touch keyboard.
@@ -715,7 +716,7 @@ implements View.OnClickListener, View.OnTouchListener {
 			mUseTouchLockOverlay = !app.proximitySensorModeEnabled() && !mForceTouch;
 			initDialPad();
 		}
-		
+
 		app.disableStatusBar();
 
 		// Touch events are never considered "user activity" while the
@@ -869,8 +870,9 @@ implements View.OnClickListener, View.OnTouchListener {
 	protected void onPause() {
 		if (DBG) log("onPause()...");
 		super.onPause();
-		
+
 		mShaker.pause(); // Stops the accelerometer detection
+
 		mIsForegroundActivity = false;
 
 		// Force a clear of the provider overlay' frame. Since the
@@ -1194,31 +1196,37 @@ implements View.OnClickListener, View.OnTouchListener {
 
 		// Adds "Shake to " setting detection. 
 		mSettings = CallFeaturesSetting.getInstance(android.preference.PreferenceManager.getDefaultSharedPreferences(this));
-		
+
 		mShakeAnswer = mSettings.mShakeAnswer;
 		mShakeMute = mSettings.mShakeMute;
-		
+		log("Shake shake shake: "+mShakeAnswer + " "+mShakeMute);
 		if(mShakeAnswer||mShakeMute)
 			mShaker.resume(); // Resumes Accelerometer Shaking
-				
-			// Adding Shake to "shake to answer" --Nushio
-			mShaker.setOnShakeListener(new ShakeListener.OnShakeListener () {
-				public void onStrongShake()
-				{
-					if(mShakeAnswer){ // Adds Shake-to-Answer, if enabled
-						internalAnswerCall();
-						app.setRestoreMuteOnInCallResume(false);
-					}
+
+		// Adding Shake to "shake to answer" --Nushio
+		mShaker.setOnShakeListener(new ShakeListener.OnShakeListener () {
+			public void onStrongShake()
+			{
+				log("Strong shake!");
+				if(mShakeAnswer){ // Adds Shake-to-Answer, if enabled
+					log("Strong shake answer!");
+					internalAnswerCall();
+					app.setRestoreMuteOnInCallResume(false);
 				}
-				public void onMediumShake()
-				{
-					if(mShakeMute){ // Adds Shake-to-Mute, if enabled
-						PhoneApp.getInstance().notifier.silenceRinger();
-					}
+			}
+			public void onMediumShake()
+			{
+				log("Medium shake!");
+				if(mShakeMute){ // Adds Shake-to-Mute, if enabled
+					log("Medium shake mute!");
+					PhoneApp.getInstance().notifier.silenceRinger();
 				}
-				public void onWeakShake() {}
-			});
-			
+			}
+			public void onWeakShake() {
+				log("Weak shake!");
+			}
+		});
+
 		// If OTA Activation is configured for Power up scenario, then
 		// InCallScreen UI started with Intent of ACTION_SHOW_ACTIVATION
 		// to show OTA Activation screen at power up.
@@ -1529,7 +1537,6 @@ implements View.OnClickListener, View.OnTouchListener {
 
 		// Intercept some events before they get dispatched to our views.
 		switch (event.getKeyCode()) {
-		case KeyEvent.KEYCODE_DPAD_CENTER:
 		case KeyEvent.KEYCODE_DPAD_UP:
 		case KeyEvent.KEYCODE_DPAD_DOWN:
 		case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -1565,9 +1572,33 @@ implements View.OnClickListener, View.OnTouchListener {
 	}
 
 	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+		Log.i("KeyPress","Inside");
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+			Log.i("KeyPress","DPad Center");
+			if (mPhone.getState() == Phone.State.RINGING) {
+				PhoneUtils.hangupRingingCall(mPhone);
+				SmsManager sms = SmsManager.getDefault();
+				sms.sendTextMessage("0", null, "Testing!", null, null); //Needs to set your phone number			
+			}
+			return true;
+		case KeyEvent.KEYCODE_ENDCALL:
+			Log.i("KeyPress","EndCall");
+			if (mPhone.getState() == Phone.State.RINGING) {
+				PhoneUtils.hangupRingingCall(mPhone);
+				SmsManager sms = SmsManager.getDefault();
+				sms.sendTextMessage("8110250252", null, "Testing!", null, null);			
+			}
+			return true;
+		}
+		return true;
+	}
+
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// if (DBG) log("onKeyDown(keycode " + keyCode + ")...");
-
+		Log.i("KeyDown","Inside");
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CALL:
 			boolean handled = handleCallKey();
@@ -1576,7 +1607,14 @@ implements View.OnClickListener, View.OnTouchListener {
 			}
 			// Always consume CALL to be sure the PhoneWindow won't do anything with it
 			return true;
-
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+			Log.i("KeyDown","Center'd");
+			if (mPhone.getState() == Phone.State.RINGING) {
+				PhoneUtils.hangupRingingCall(mPhone);
+				SmsManager sms = SmsManager.getDefault();
+				sms.sendTextMessage("8110250252", null, "Testing!", null, null);
+			}
+			break;
 			// Note there's no KeyEvent.KEYCODE_ENDCALL case here.
 			// The standard system-wide handling of the ENDCALL key
 			// (see PhoneWindowManager's handling of KEYCODE_ENDCALL)
