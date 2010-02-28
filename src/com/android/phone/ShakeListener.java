@@ -17,20 +17,18 @@ import java.lang.UnsupportedOperationException;
 
 public class ShakeListener implements SensorListener 
 {
-	private static int FORCE_THRESHOLD_STRONG = 950;
+	private static int FORCE_THRESHOLD_STRONG = 750;
 	private static int FORCE_THRESHOLD_MEDIUM = 500;
 	private static int FORCE_THRESHOLD_WEAK = 350;
 	private static final int TIME_THRESHOLD = 100;
 	private static final int SHAKE_TIMEOUT = 500;
 	private static final int SHAKE_DURATION = 1000;
-	private static final int SHAKE_COUNT = 3;
 
 	private SensorManager mSensorMgr;
 	private float mLastX=-1.0f, mLastY=-1.0f, mLastZ=-1.0f;
 	private long mLastTime;
 	private OnShakeListener mShakeListener;
 	private Context mContext;
-	private int mShakeCount = 0;
 	private long mLastShake;
 	private long mLastForce;
 
@@ -78,43 +76,40 @@ public class ShakeListener implements SensorListener
 		if (sensor != SensorManager.SENSOR_ACCELEROMETER) return;
 		long now = System.currentTimeMillis();
 
-		if ((now - mLastForce) > SHAKE_TIMEOUT) {
-			mShakeCount = 0;
-		}
-
 		if ((now - mLastTime) > TIME_THRESHOLD) {
 			long diff = now - mLastTime;
 			float speed = Math.abs(values[SensorManager.DATA_X] + values[SensorManager.DATA_Y] + values[SensorManager.DATA_Z] - mLastX - mLastY - mLastZ) / diff * 10000;
-			Log.i("Testing","Speed: "+ speed);
+			if(speed > 200)
+				Log.i("ShakeListener","Speed: "+ speed);
 			if (speed > FORCE_THRESHOLD_STRONG) {
-				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
+				if(now - mLastShake > SHAKE_DURATION) {
+					mLastShake = now;
 					if (mShakeListener != null) { 
-						Log.i("Testing","Strong Shake, haha!: "+ speed);
+						Log.i("ShakeListener","Strong Shake Speed: "+ speed);
 						mShakeListener.onStrongShake(); 
 					}
 				}
-			}
-			if (speed > FORCE_THRESHOLD_MEDIUM) {
-				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
+				mLastForce = now;
+			}else if (speed > FORCE_THRESHOLD_MEDIUM) { 
+				if(now - mLastShake > SHAKE_DURATION) {
+					mLastShake = now;
 					if (mShakeListener != null) { 
-						Log.i("Testing","Medium Shake, haha!: "+ speed);
+						Log.i("ShakeListener","Medium Shake Speed: "+ speed);
 						mShakeListener.onMediumShake(); 
 					}
 				}
-			}
-			if (speed > FORCE_THRESHOLD_WEAK) {
-				if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
+				mLastForce = now;
+			}else if (speed > FORCE_THRESHOLD_WEAK) { 
+				if(now - mLastShake > SHAKE_DURATION) {
+					mLastShake = now;
 					if (mShakeListener != null) { 
-						Log.i("Testing","Weak Shake, haha!: "+ speed);
+						Log.i("ShakeListener","Weak Shake Speed: "+ speed);
 						mShakeListener.onWeakShake(); 
 					}
 				}
+				mLastForce = now;
 			}
-			mLastShake = now;
-			mShakeCount = 0;
-			mLastForce = now;
-			
-			
+
 			mLastTime = now;
 			mLastX = values[SensorManager.DATA_X];
 			mLastY = values[SensorManager.DATA_Y];
@@ -123,4 +118,3 @@ public class ShakeListener implements SensorListener
 	}
 
 }
-

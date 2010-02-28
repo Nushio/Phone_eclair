@@ -1199,7 +1199,6 @@ implements View.OnClickListener, View.OnTouchListener {
 
 		mShakeAnswer = mSettings.mShakeAnswer;
 		mShakeMute = mSettings.mShakeMute;
-		log("Shake shake shake: "+mShakeAnswer + " "+mShakeMute);
 		if(mShakeAnswer||mShakeMute)
 			mShaker.resume(); // Resumes Accelerometer Shaking
 
@@ -1572,33 +1571,9 @@ implements View.OnClickListener, View.OnTouchListener {
 	}
 
 	@Override
-	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-		Log.i("KeyPress","Inside");
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_DPAD_CENTER:
-			Log.i("KeyPress","DPad Center");
-			if (mPhone.getState() == Phone.State.RINGING) {
-				PhoneUtils.hangupRingingCall(mPhone);
-				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage("0", null, "Testing!", null, null); //Needs to set your phone number			
-			}
-			return true;
-		case KeyEvent.KEYCODE_ENDCALL:
-			Log.i("KeyPress","EndCall");
-			if (mPhone.getState() == Phone.State.RINGING) {
-				PhoneUtils.hangupRingingCall(mPhone);
-				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage("8110250252", null, "Testing!", null, null);			
-			}
-			return true;
-		}
-		return true;
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// if (DBG) log("onKeyDown(keycode " + keyCode + ")...");
-		Log.i("KeyDown","Inside");
+//		Log.i("KeyDown","Inside");
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CALL:
 			boolean handled = handleCallKey();
@@ -1608,12 +1583,12 @@ implements View.OnClickListener, View.OnTouchListener {
 			// Always consume CALL to be sure the PhoneWindow won't do anything with it
 			return true;
 		case KeyEvent.KEYCODE_DPAD_CENTER:
-			Log.i("KeyDown","Center'd");
-			if (mPhone.getState() == Phone.State.RINGING) {
-				PhoneUtils.hangupRingingCall(mPhone);
-				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage("8110250252", null, "Testing!", null, null);
-			}
+//			Log.i("KeyDown","Center'd");
+//			if (mPhone.getState() == Phone.State.RINGING) {
+//				PhoneUtils.hangupRingingCall(mPhone);
+//				SmsManager sms = SmsManager.getDefault();
+//				sms.sendTextMessage("0", null, "Testing!", null, null);
+//			}
 			break;
 			// Note there's no KeyEvent.KEYCODE_ENDCALL case here.
 			// The standard system-wide handling of the ENDCALL key
